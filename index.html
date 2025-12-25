@@ -1,193 +1,88 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Verifikasi Keaslian Surat RW. 007</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Verifikasi Surat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      max-width: 420px;
-      margin: auto;
-      border-radius: 10px;
-    }
-    .status-box {
-      text-align: center;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .status-valid {
-      background: #e6f4ea;
-      color: #137333;
-      border: 1px solid #b7dfc2;
-    }
-    .status-invalid {
-      background: #fce8e6;
-      color: #a50e0e;
-      border: 1px solid #f5c6cb;
-    }
-    .header {
-      text-align: center;
-      background: #ffe08a;
-      color: #5c4a00;
-      padding: 15px 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-    .header img {
-      max-width: 70px;
-      margin-bottom: 8px;
-    }
-    .header h2 {
-      margin: 5px 0 0;
-      font-size: 18px;
-    }
-    .header p {
-      margin: 0;
-      font-size: 13px;
-      opacity: 0.9;
-    }
-    .footer {
-      margin-top: 20px;
-      padding-top: 10px;
-      border-top: 1px solid #ddd;
-      font-size: 12px;
-      color: #777;
-      text-align: center;
-    }
-  </style>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+}
+.status-valid {
+  background:#e6f4ea;
+  color:#137333;
+  padding:12px;
+  border-radius:6px;
+  font-weight:bold;
+  text-align:center;
+}
+.status-invalid {
+  background:#fce8e6;
+  color:#a50e0e;
+  padding:12px;
+  border-radius:6px;
+  font-weight:bold;
+  text-align:center;
+}
+.footer {
+  margin-top:15px;
+  font-size:12px;
+  color:#777;
+  text-align:center;
+}
+</style>
 </head>
 
 <body>
-
 <div class="card">
-
-  <div class="header">
-    <img src="logo.png" alt="Logo RT">
-    <h2>VERIFIKASI SURAT RESMI</h2>
-    <p>RW 007</p>
-    <p>Desa Sukasejati Kecamatan Cikarang Selatan</p>
-  </div>
-
-  <h3>Validasi Keaslian Surat</h3>
+  <h3 style="text-align:center">VERIFIKASI SURAT RT 022/007</h3>
   <div id="hasil">Memuat data...</div>
-
-  <p style="font-size:11px;color:#777;margin-top:15px;text-align:center;">
-    Dokumen ini ditandatangani secara elektronik dan sah tanpa tanda tangan basah.
-  </p>
-
-  <div class="footer" id="waktuAkses">
-    Memuat waktu akses...
-  </div>
-
+  <div class="footer" id="waktu"></div>
 </div>
 
 <script>
-/* ================== KONFIGURASI ================== */
-const SHEET_ID   = "1nRrYHg4lsgb8oM4bsgM2C3esFN4Lgqi0f_64PLdc6R4";
-const SHEET_NAME = "publish";
-/* ================================================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2XKiMA05OHdsc7bkzHoX_vPmnnn8Jj275H9QW5kNdT8bBdpnVAqMUPAuqlThYP4RY/exec";
 
 const params = new URLSearchParams(window.location.search);
-const idCari = params.get("id");
-const hasil  = document.getElementById("hasil");
+const id = params.get("id");
+const hasil = document.getElementById("hasil");
 
-function formatTanggal(val) {
-  if (!val) return "-";
-
-  // Tangani format: Date(2025,11,24)
-  if (typeof val === "string" && val.startsWith("Date(")) {
-    const angka = val.match(/\d+/g);
-    if (angka && angka.length >= 3) {
-      const y = angka[0];
-      const m = angka[1]; // sudah 0-based
-      const d = angka[2];
-      return new Date(y, m, d).toLocaleDateString("id-ID", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-      });
-    }
-  }
-
-  // Tangani ISO / Date normal
-  const d = new Date(val);
-  if (isNaN(d)) return val;
-
-  return d.toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric"
-  });
-}
-
-
-if (!idCari) {
-  hasil.innerHTML = `
-    <div class="status-box status-invalid">
-      KODE VERIFIKASI TIDAK DITEMUKAN
-    </div>`;
+if (!id) {
+  hasil.innerHTML = `<div class="status-invalid">KODE VERIFIKASI TIDAK DITEMUKAN</div>`;
 } else {
-
-  fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`)
-    .then(res => res.text())
-    .then(text => {
-      const json = JSON.parse(text.substring(47).slice(0, -2));
-      const rows = json.table.rows;
-      let ketemu = false;
-
-      rows.forEach(r => {
-        if (r.c[0]?.v == idCari) {
-          ketemu = true;
-          hasil.innerHTML = `
-            <div class="status-box status-valid">
-              ✔ SURAT SAH / VALID
-            </div>
-            <p><b>Nomor Surat:</b><br>${r.c[1]?.v || "-"}</p>
-            <p><b>Nama Pemohon:</b><br>${r.c[2]?.v || "-"}</p>
-            <p><b>Nama Penandatangan:</b><br>${r.c[3]?.v || "-"}</p>
-            <p><b>Jabatan:</b><br>${r.c[4]?.v || "-"}</p>
-            <p><b>Tanggal:</b><br>${formatTanggal(r.c[5]?.v)}</p>
-          `;
-        }
-      });
-
-      if (!ketemu) {
+  fetch(`${SCRIPT_URL}?id=${id}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "valid") {
         hasil.innerHTML = `
-          <div class="status-box status-invalid">
-            ✖ SURAT TIDAK TERDAFTAR
-          </div>`;
+          <div class="status-valid">✔ SURAT SAH / VALID</div>
+          <p><b>Nomor Surat:</b><br>${data.nomor}</p>
+          <p><b>Nama:</b><br>${data.nama}</p>
+          <p><b>Jabatan:</b><br>${data.jabatan}</p>
+          <p><b>Tanggal:</b><br>${data.tanggal}</p>
+        `;
+      } else {
+        hasil.innerHTML = `<div class="status-invalid">✖ SURAT TIDAK TERDAFTAR</div>`;
       }
     })
-    .catch(err => {
-      console.error(err);
-      hasil.innerHTML = `
-        <div class="status-box status-invalid">
-          GAGAL MENGAMBIL DATA
-        </div>`;
+    .catch(() => {
+      hasil.innerHTML = `<div class="status-invalid">GAGAL MENGAMBIL DATA</div>`;
     });
 }
 
-/* WAKTU AKSES */
 const waktu = new Date();
-document.getElementById("waktuAkses").innerText =
-  "Diakses pada: " + waktu.toLocaleString("id-ID") + " WIB";
+document.getElementById("waktu").innerText =
+  "Diakses: " + waktu.toLocaleString("id-ID") + " WIB";
 </script>
-
 </body>
 </html>
-
-
-
-
-
