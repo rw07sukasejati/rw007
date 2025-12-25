@@ -1,162 +1,80 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Verifikasi Keaslian Surat RT 022/007</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      max-width: 420px;
-      margin: auto;
-      border-radius: 10px;
-    }
-    .valid { color: green; font-weight: bold; }
-    .invalid { color: red; font-weight: bold; }
-    
-    .status-box {
-      text-align: center;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-    
-    .status-valid {
-      background: #e6f4ea;
-      color: #137333;
-      border: 1px solid #b7dfc2;
-      font-weight: bold;
-    }
-    
-    .status-invalid {
-      background: #fce8e6;
-      color: #a50e0e;
-      border: 1px solid #f5c6cb;
-      font-weight: bold;
-    }
+<meta charset="UTF-8">
+<title>Verifikasi Keaslian Surat RT 022/007</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    .header {
-      text-align: center;
-      background: #0d47a1;
-      color: white;
-      padding: 15px 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-    
-    .header img {
-      max-width: 70px;
-      margin-bottom: 8px;
-    }
-    
-    .header h2 {
-      margin: 5px 0 0;
-      font-size: 18px;
-    }
-    
-    .header p {
-      margin: 0;
-      font-size: 13px;
-      opacity: 0.9;
-    }
-
-    .footer {
-      margin-top: 20px;
-      padding-top: 10px;
-      border-top: 1px solid #ddd;
-      font-size: 12px;
-      color: #777;
-      text-align: center;
-    }
-
-    
-  </style>
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
+  padding:20px;
+}
+.card{
+  background:#fff;
+  max-width:420px;
+  margin:auto;
+  padding:20px;
+  border-radius:10px;
+}
+.status-box{
+  text-align:center;
+  padding:12px;
+  margin-bottom:15px;
+  border-radius:6px;
+  font-size:16px;
+  font-weight:bold;
+}
+.status-valid{
+  background:#e6f4ea;
+  color:#137333;
+  border:1px solid #b7dfc2;
+}
+.status-invalid{
+  background:#fce8e6;
+  color:#a50e0e;
+  border:1px solid #f5c6cb;
+}
+.header{
+  text-align:center;
+  background:#0d47a1;
+  color:#fff;
+  padding:15px 10px;
+  border-radius:8px;
+  margin-bottom:15px;
+}
+.header img{
+  max-width:70px;
+  margin-bottom:8px;
+}
+.footer{
+  margin-top:15px;
+  font-size:12px;
+  color:#777;
+  text-align:center;
+}
+</style>
 </head>
+
 <body>
 
 <div class="card">
-   <div class="header">
+  <div class="header">
     <img src="logo.png" alt="Logo RT">
     <h2>VERIFIKASI SURAT RESMI</h2>
     <p>RT 022 / RW 007</p>
   </div>
 
-    
-  <hr>
-  
-  <h2>Validasi Keaslian Surat</h2>
+  <h3>Validasi Keaslian Surat</h3>
   <div id="hasil">Memuat data...</div>
-  
-   <p style="font-size:11px;color:#777;margin-top:15px;text-align:center;">
+
+  <p style="font-size:11px;color:#777;text-align:center;">
     Dokumen ini ditandatangani secara elektronik dan sah tanpa tanda tangan basah.
   </p>
-  
-   <div class="footer" id="waktuAkses">
-  Memuat waktu akses...
-  </div>
 
+  <div class="footer" id="waktuAkses"></div>
 </div>
-
-<script>
-const SHEET_ID = "1dNh2oOBqgGtgC9vBIB2vCIjDM7kdQOE1PZPR_LemcEY";
-const SHEET_NAME = "publish"; // jika nama sheet tidak diganti
-
-const params = new URLSearchParams(window.location.search);
-const idCari = params.get("id");
-
-const hasil = document.getElementById("hasil");
-
-if (!idCari) {
-  hasil.innerHTML = `
-    <div class="status-box status-invalid">
-      KODE VERIFIKASI TIDAK DITEMUKAN
-    </div>`;
-} else {
-  fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`)
-    .then(res => res.text())
-    .then(text => {
-      const json = JSON.parse(text.substring(47).slice(0, -2));
-      const rows = json.table.rows;
-
-      let ketemu = false;
-
-      rows.forEach(r => {
-        const id = r.c[0]?.v;
-        if (id === idCari) {
-          ketemu = true;
-          hasil.innerHTML = `
-            <div class="status-box status-valid">
-              ✔ SURAT SAH / VALID
-            </div>
-            <p><b>Nomor Surat:</b><br>${r.c[1]?.v}</p>
-            <p><b>Nama Penandatangan:</b><br>${r.c[2]?.v}</p>
-            <p><b>Jabatan:</b><br>${r.c[3]?.v}</p>
-            <p><b>Tanggal:</b><br>${r.c[4]?.v}</p>
-          `;
-        }
-      });
-
-      if (!ketemu) {
-        hasil.innerHTML = `
-          <div class="status-box status-invalid">
-            ✖ SURAT TIDAK TERDAFTAR
-          </div>`;
-      }
-    })
-    .catch(() => {
-      hasil.innerHTML = `
-        <div class="status-box status-invalid">
-          GAGAL MENGAMBIL DATA
-        </div>`;
-    });
-}
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0DRa1AAArjluiE_B_CPlgGIEmN9nqqG3l_7hBjxcM2VYO_PpRmQYWr8Ou7ccJn663/exec";
@@ -169,73 +87,37 @@ if(!id){
   hasil.innerHTML = `
     <div class="status-box status-invalid">
       KODE VERIFIKASI TIDAK DITEMUKAN
-    </div>
-  `;
+    </div>`;
 }else{
   fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
     .then(r=>r.json())
     .then(data=>{
       if(data.status==="valid"){
         hasil.innerHTML = `
-          <div class="status-box status-valid">
-            ✔ SURAT SAH / VALID
-          </div>
-
-          <div class="field">
-            <b>Nomor Surat</b>
-            <span>${data.nomor}</span>
-          </div>
-
-          <div class="field">
-            <b>Nama Penandatangan</b>
-            <span>${data.nama}</span>
-          </div>
-
-          <div class="field">
-            <b>Jabatan</b>
-            <span>${data.jabatan}</span>
-          </div>
-
-          <div class="field">
-            <b>Tanggal</b>
-            <span>${data.tanggal}</span>
-          </div>
+          <div class="status-box status-valid">✔ SURAT SAH / VALID</div>
+          <p><b>Nomor Surat:</b><br>${data.nomor}</p>
+          <p><b>Nama Penandatangan:</b><br>${data.nama}</p>
+          <p><b>Jabatan:</b><br>${data.jabatan}</p>
+          <p><b>Tanggal:</b><br>${data.tanggal}</p>
         `;
       }else{
         hasil.innerHTML = `
           <div class="status-box status-invalid">
             ✖ SURAT TIDAK TERDAFTAR
-          </div>
-        `;
+          </div>`;
       }
     })
     .catch(()=>{
       hasil.innerHTML = `
         <div class="status-box status-invalid">
           GAGAL MENGAMBIL DATA
-        </div>
-      `;
+        </div>`;
     });
 }
 
-// waktu akses
-document.getElementById("waktu").innerText =
+document.getElementById("waktuAkses").innerText =
   "Diakses: " + new Date().toLocaleString("id-ID") + " WIB";
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
