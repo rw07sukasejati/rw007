@@ -1,103 +1,162 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Verifikasi Keaslian Surat RT 022/007</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Verifikasi Keaslian Surat RT 022/007</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      max-width: 420px;
+      margin: auto;
+      border-radius: 10px;
+    }
+    .valid { color: green; font-weight: bold; }
+    .invalid { color: red; font-weight: bold; }
+    
+    .status-box {
+      text-align: center;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    
+    .status-valid {
+      background: #e6f4ea;
+      color: #137333;
+      border: 1px solid #b7dfc2;
+      font-weight: bold;
+    }
+    
+    .status-invalid {
+      background: #fce8e6;
+      color: #a50e0e;
+      border: 1px solid #f5c6cb;
+      font-weight: bold;
+    }
 
-<style>
-body{
-  font-family:Arial, sans-serif;
-  background:#f2f2f2;
-  padding:20px;
-}
-.card{
-  background:#fff;
-  max-width:420px;
-  margin:auto;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,.08);
-}
-.header{
-  text-align:center;
-}
-.header img{
-  width:70px;
-  margin-bottom:10px;
-}
-.header h2{
-  margin:0;
-  font-size:20px;
-}
-.header p{
-  margin:4px 0 0;
-  font-size:14px;
-  color:#555;
-}
-hr{
-  border:none;
-  border-top:1px solid #ddd;
-  margin:15px 0;
-}
+    .header {
+      text-align: center;
+      background: #0d47a1;
+      color: white;
+      padding: 15px 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .header img {
+      max-width: 70px;
+      margin-bottom: 8px;
+    }
+    
+    .header h2 {
+      margin: 5px 0 0;
+      font-size: 18px;
+    }
+    
+    .header p {
+      margin: 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
 
-.status-box{
-  text-align:center;
-  padding:12px;
-  margin-bottom:15px;
-  border-radius:6px;
-  font-size:16px;
-  font-weight:bold;
-}
-.status-valid{
-  background:#e6f4ea;
-  color:#137333;
-  border:1px solid #b7dfc2;
-}
-.status-invalid{
-  background:#fce8e6;
-  color:#a50e0e;
-  border:1px solid #f5c6cb;
-}
+    .footer {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+    }
 
-.field{
-  margin-bottom:10px;
-}
-.field b{
-  display:block;
-  font-size:13px;
-  color:#333;
-}
-.field span{
-  font-size:15px;
-}
-
-.footer{
-  margin-top:15px;
-  font-size:12px;
-  color:#777;
-  text-align:center;
-}
-</style>
+    
+  </style>
 </head>
-
 <body>
 
 <div class="card">
-  <div class="header">
-    <!-- GANTI LOGO DI SINI -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Logo_Kemendagri.png" alt="Logo">
+   <div class="header">
+    <img src="logo.png" alt="Logo RT">
     <h2>VERIFIKASI SURAT RESMI</h2>
     <p>RT 022 / RW 007</p>
   </div>
 
+    
   <hr>
-
-  <h3>Validasi Keaslian Surat</h3>
+  
+  <h2>Validasi Keaslian Surat</h2>
   <div id="hasil">Memuat data...</div>
+  
+   <p style="font-size:11px;color:#777;margin-top:15px;text-align:center;">
+    Dokumen ini ditandatangani secara elektronik dan sah tanpa tanda tangan basah.
+  </p>
+  
+   <div class="footer" id="waktuAkses">
+  Memuat waktu akses...
+  </div>
 
-  <div class="footer" id="waktu"></div>
 </div>
+
+<script>
+const SHEET_ID = "1dNh2oOBqgGtgC9vBIB2vCIjDM7kdQOE1PZPR_LemcEY";
+const SHEET_NAME = "publish"; // jika nama sheet tidak diganti
+
+const params = new URLSearchParams(window.location.search);
+const idCari = params.get("id");
+
+const hasil = document.getElementById("hasil");
+
+if (!idCari) {
+  hasil.innerHTML = `
+    <div class="status-box status-invalid">
+      KODE VERIFIKASI TIDAK DITEMUKAN
+    </div>`;
+} else {
+  fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`)
+    .then(res => res.text())
+    .then(text => {
+      const json = JSON.parse(text.substring(47).slice(0, -2));
+      const rows = json.table.rows;
+
+      let ketemu = false;
+
+      rows.forEach(r => {
+        const id = r.c[0]?.v;
+        if (id === idCari) {
+          ketemu = true;
+          hasil.innerHTML = `
+            <div class="status-box status-valid">
+              ✔ SURAT SAH / VALID
+            </div>
+            <p><b>Nomor Surat:</b><br>${r.c[1]?.v}</p>
+            <p><b>Nama Penandatangan:</b><br>${r.c[2]?.v}</p>
+            <p><b>Jabatan:</b><br>${r.c[3]?.v}</p>
+            <p><b>Tanggal:</b><br>${r.c[4]?.v}</p>
+          `;
+        }
+      });
+
+      if (!ketemu) {
+        hasil.innerHTML = `
+          <div class="status-box status-invalid">
+            ✖ SURAT TIDAK TERDAFTAR
+          </div>`;
+      }
+    })
+    .catch(() => {
+      hasil.innerHTML = `
+        <div class="status-box status-invalid">
+          GAGAL MENGAMBIL DATA
+        </div>`;
+    });
+}
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0DRa1AAArjluiE_B_CPlgGIEmN9nqqG3l_7hBjxcM2VYO_PpRmQYWr8Ou7ccJn663/exec";
@@ -166,3 +225,17 @@ document.getElementById("waktu").innerText =
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
