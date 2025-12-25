@@ -51,7 +51,7 @@ body {
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2XKiMA05OHdsc7bkzHoX_vPmnnn8Jj275H9QW5kNdT8bBdpnVAqMUPAuqlThYP4RY/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0DRa1AAArjluiE_B_CPlgGIEmN9nqqG3l_7hBjxcM2VYO_PpRmQYWr8Ou7ccJn663/exec";
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
@@ -61,10 +61,7 @@ if (!id) {
   hasil.innerHTML = `<div class="status-invalid">KODE VERIFIKASI TIDAK DITEMUKAN</div>`;
 } else {
   fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
-    .then(res => {
-      if (!res.ok) throw new Error("HTTP error");
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
       if (data.status === "valid") {
         hasil.innerHTML = `
@@ -83,12 +80,12 @@ if (!id) {
       hasil.innerHTML = `<div class="status-invalid">GAGAL MENGAMBIL DATA</div>`;
     });
 }
-</script>
 
+// waktu akses
 const waktu = new Date();
 document.getElementById("waktu").innerText =
   "Diakses: " + waktu.toLocaleString("id-ID") + " WIB";
 </script>
+
 </body>
 </html>
-
