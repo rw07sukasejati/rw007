@@ -2,39 +2,77 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Verifikasi Surat</title>
+<title>Verifikasi Keaslian Surat RT 022/007</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  padding: 20px;
+body{
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
+  padding:20px;
 }
-.card {
-  background: #fff;
-  max-width: 420px;
-  margin: auto;
-  padding: 20px;
-  border-radius: 10px;
+.card{
+  background:#fff;
+  max-width:420px;
+  margin:auto;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
-.status-valid {
+.header{
+  text-align:center;
+}
+.header img{
+  width:70px;
+  margin-bottom:10px;
+}
+.header h2{
+  margin:0;
+  font-size:20px;
+}
+.header p{
+  margin:4px 0 0;
+  font-size:14px;
+  color:#555;
+}
+hr{
+  border:none;
+  border-top:1px solid #ddd;
+  margin:15px 0;
+}
+
+.status-box{
+  text-align:center;
+  padding:12px;
+  margin-bottom:15px;
+  border-radius:6px;
+  font-size:16px;
+  font-weight:bold;
+}
+.status-valid{
   background:#e6f4ea;
   color:#137333;
-  padding:12px;
-  border-radius:6px;
-  font-weight:bold;
-  text-align:center;
+  border:1px solid #b7dfc2;
 }
-.status-invalid {
+.status-invalid{
   background:#fce8e6;
   color:#a50e0e;
-  padding:12px;
-  border-radius:6px;
-  font-weight:bold;
-  text-align:center;
+  border:1px solid #f5c6cb;
 }
-.footer {
+
+.field{
+  margin-bottom:10px;
+}
+.field b{
+  display:block;
+  font-size:13px;
+  color:#333;
+}
+.field span{
+  font-size:15px;
+}
+
+.footer{
   margin-top:15px;
   font-size:12px;
   color:#777;
@@ -44,9 +82,20 @@ body {
 </head>
 
 <body>
+
 <div class="card">
-  <h3 style="text-align:center">VERIFIKASI SURAT RT 022/007</h3>
+  <div class="header">
+    <!-- GANTI LOGO DI SINI -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Logo_Kemendagri.png" alt="Logo">
+    <h2>VERIFIKASI SURAT RESMI</h2>
+    <p>RT 022 / RW 007</p>
+  </div>
+
+  <hr>
+
+  <h3>Validasi Keaslian Surat</h3>
   <div id="hasil">Memuat data...</div>
+
   <div class="footer" id="waktu"></div>
 </div>
 
@@ -57,34 +106,62 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 const hasil = document.getElementById("hasil");
 
-if (!id) {
-  hasil.innerHTML = `<div class="status-invalid">KODE VERIFIKASI TIDAK DITEMUKAN</div>`;
-} else {
+if(!id){
+  hasil.innerHTML = `
+    <div class="status-box status-invalid">
+      KODE VERIFIKASI TIDAK DITEMUKAN
+    </div>
+  `;
+}else{
   fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === "valid") {
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.status==="valid"){
         hasil.innerHTML = `
-          <div class="status-valid">✔ SURAT SAH / VALID</div>
-          <p><b>Nomor Surat:</b><br>${data.nomor}</p>
-          <p><b>Nama:</b><br>${data.nama}</p>
-          <p><b>Jabatan:</b><br>${data.jabatan}</p>
-          <p><b>Tanggal:</b><br>${data.tanggal}</p>
+          <div class="status-box status-valid">
+            ✔ SURAT SAH / VALID
+          </div>
+
+          <div class="field">
+            <b>Nomor Surat</b>
+            <span>${data.nomor}</span>
+          </div>
+
+          <div class="field">
+            <b>Nama Penandatangan</b>
+            <span>${data.nama}</span>
+          </div>
+
+          <div class="field">
+            <b>Jabatan</b>
+            <span>${data.jabatan}</span>
+          </div>
+
+          <div class="field">
+            <b>Tanggal</b>
+            <span>${data.tanggal}</span>
+          </div>
         `;
-      } else {
-        hasil.innerHTML = `<div class="status-invalid">✖ SURAT TIDAK TERDAFTAR</div>`;
+      }else{
+        hasil.innerHTML = `
+          <div class="status-box status-invalid">
+            ✖ SURAT TIDAK TERDAFTAR
+          </div>
+        `;
       }
     })
-    .catch(err => {
-      console.error(err);
-      hasil.innerHTML = `<div class="status-invalid">GAGAL MENGAMBIL DATA</div>`;
+    .catch(()=>{
+      hasil.innerHTML = `
+        <div class="status-box status-invalid">
+          GAGAL MENGAMBIL DATA
+        </div>
+      `;
     });
 }
 
 // waktu akses
-const waktu = new Date();
 document.getElementById("waktu").innerText =
-  "Diakses: " + waktu.toLocaleString("id-ID") + " WIB";
+  "Diakses: " + new Date().toLocaleString("id-ID") + " WIB";
 </script>
 
 </body>
