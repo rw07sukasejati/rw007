@@ -60,8 +60,11 @@ const hasil = document.getElementById("hasil");
 if (!id) {
   hasil.innerHTML = `<div class="status-invalid">KODE VERIFIKASI TIDAK DITEMUKAN</div>`;
 } else {
-  fetch(`${SCRIPT_URL}?id=${id}`)
-    .then(res => res.json())
+  fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`)
+    .then(res => {
+      if (!res.ok) throw new Error("HTTP error");
+      return res.json();
+    })
     .then(data => {
       if (data.status === "valid") {
         hasil.innerHTML = `
@@ -75,10 +78,12 @@ if (!id) {
         hasil.innerHTML = `<div class="status-invalid">✖ SURAT TIDAK TERDAFTAR</div>`;
       }
     })
-    .catch(() => {
+    .catch(err => {
+      console.error(err);
       hasil.innerHTML = `<div class="status-invalid">GAGAL MENGAMBIL DATA</div>`;
     });
 }
+</script>
 
 const waktu = new Date();
 document.getElementById("waktu").innerText =
@@ -86,3 +91,4 @@ document.getElementById("waktu").innerText =
 </script>
 </body>
 </html>
+
